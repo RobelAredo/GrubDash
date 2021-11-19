@@ -89,10 +89,13 @@ const update = (req, res) => {
   res.json({ data: order });
 }
 
-const destroy = (req, res, next) => {
+const statusPending = (req, res, next) => {
   const { order } = res.locals;
-  if (order.status !== "pending") return next({status: 400, message: "An order cannot be deleted unless it is pending"});
+  if (order.status === "pending") return next();
+  return next({ status: 400, message: "An order cannot be deleted unless it is pending" });
+}
 
+const destroy = (req, res, next) => {
   const { orderId } = req.params;
   const index = orders.indexOf(order => order.id === orderId);
   orders.splice(index, 1);
@@ -104,5 +107,5 @@ module.exports = {
   create : [ hasAllProperties, create ],
   read : [ orderExists, read ],
   update : [ orderExists, hasAllProperties, update ],
-  delete : [ orderExists, destroy ],
+  delete : [ orderExists, statusPending, destroy ],
 };
