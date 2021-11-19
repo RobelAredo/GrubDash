@@ -760,10 +760,10 @@ describe("orders router", () => {
       expect(response.status).toBe(204);
       
       const deleted = await request(app)
-        .delete(`${ATTACHED_PATH}/22`)
+        .get(`${ATTACHED_PATH}/22`)
         .set("Accept", "application/json");
       expect(response.body.data).toBeUndefined();
-      expect(deleted.status).toBe(204);
+      expect(deleted.status).toBe(404);
     });
     test("returns 404 for non-existent order", async () => {
       const response = await request(app)

@@ -95,7 +95,7 @@ const destroy = (req, res, next) => {
 
   const { orderId } = req.params;
   const index = orders.indexOf(order => order.id === orderId);
-  orders.slice(index, 1);
+  orders.splice(index, 1);
 
   res.sendStatus(204);
 }
