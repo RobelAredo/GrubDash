@@ -1,17 +1,14 @@
 const path = require("path");
 
-// Use the existing order data
 const orders = require(path.resolve("src/data/orders-data"));
 
-// Use this function to assigh ID's when necessary
 const nextId = require("../utils/nextId");
 
-// TODO: Implement the /orders handlers needed to make the tests pass
-const list = (req, res) => {
+function list (req, res) {
   res.json({ data : orders });
 };
 
-const validateStatus = (acc, status, order) => {
+function validateStatus (acc, status, order) {
   if (!order) return;
   const validStatuses = [ "pending", "preparing", "out-for-delivery"];
   if (status === "delivered") acc.push("A delivered order cannot be changed");
@@ -20,7 +17,7 @@ const validateStatus = (acc, status, order) => {
   };
 }
 
-const validiteDishes = (acc, dishes) => {
+function validiteDishes (acc, dishes) {
   if (!Array.isArray(dishes) || !dishes.length) {
     acc.push("Order must include at least one dish")
     return;
@@ -30,7 +27,7 @@ const validiteDishes = (acc, dishes) => {
   })
 }
 
-const hasAllProperties = (req, res, next) => {
+function hasAllProperties (req, res, next) {
   const { params: { orderId }, body: { data: { id } } } = req;
   if(orderId && id && !(id == orderId)) return next({
       status: 400,
@@ -58,7 +55,7 @@ const hasAllProperties = (req, res, next) => {
     });
 }
 
-const create = (req, res) => {
+function create (req, res) {
   const { newOrder } = res.locals;
   const id = nextId();
   const order = { ...newOrder, id };
@@ -66,7 +63,7 @@ const create = (req, res) => {
   res.status(201).json({ data: order });
 }
 
-const orderExists = (req, res, next) => {
+function orderExists (req, res, next) {
   const { orderId } = req.params;
   const order = orders.find(order => order.id === orderId);
   res.locals.order = order;
@@ -78,24 +75,24 @@ const orderExists = (req, res, next) => {
     });
 }
 
-const read = (req, res) => {
+function read (req, res) {
   const { order } = res.locals;
   res.json({ data: order });
 }
 
-const update = (req, res) => {
+function update (req, res) {
   const { order, newOrder } = res.locals;
   Object.assign(order, newOrder);
   res.json({ data: order });
 }
 
-const statusPending = (req, res, next) => {
+function statusPending (req, res, next) {
   const { order } = res.locals;
   if (order.status === "pending") return next();
   return next({ status: 400, message: "An order cannot be deleted unless it is pending" });
 }
 
-const destroy = (req, res, next) => {
+function destroy (req, res, next) {
   const { orderId } = req.params;
   const index = orders.indexOf(order => order.id === orderId);
   orders.splice(index, 1);

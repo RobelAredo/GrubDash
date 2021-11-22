@@ -1,17 +1,14 @@
 const path = require("path");
 
-// Use the existing dishes data
 const dishes = require(path.resolve("src/data/dishes-data"));
 
-// Use this function to assign ID's when necessary
 const nextId = require("../utils/nextId");
 
-// TODO: Implement the /dishes handlers needed to make the tests pass
-const list = (req, res) => {
+function list (req, res) {
   res.json({ data: dishes });
 }
 
-const hasAllProperties = (req, res, next) => {
+function hasAllProperties (req, res, next) {
   const { params: { dishId }, body: { data: { id } } } = req
   if(id && !(id == dishId)) return next({
       status: 400,
@@ -39,7 +36,7 @@ const hasAllProperties = (req, res, next) => {
     });
 }
 
-const create = (req, res) => {
+function create (req, res) {
   const { newDish } = res.locals;
   const id = nextId();
   const dish = { ...newDish, id };
@@ -47,7 +44,7 @@ const create = (req, res) => {
   res.status(201).json({ data: dish });
 }
 
-const dishExists = (req, res, next) => {
+function dishExists (req, res, next) {
   const { dishId } = req.params;
   const dish = dishes.find(dish => dish.id === dishId);
   res.locals.dish = dish;
@@ -59,12 +56,12 @@ const dishExists = (req, res, next) => {
     });
 }
 
-const read = (req, res) => {
+function read (req, res) {
   const { dish } = res.locals;
   res.json({ data: dish });
 }
 
-const update = (req, res) => {
+function update (req, res) {
   const { dish, newDish } = res.locals;
   Object.assign(dish, newDish);
   res.json({ data: dish });
